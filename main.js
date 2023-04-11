@@ -23,7 +23,7 @@ plane.rotateX(Math.PI/2);
 
 //camera position
 camera.position.z = 50;
-camera.position.x = 20;
+camera.position.x = 50;
 camera.position.y = 42;
 camera.lookAt(0, 0, 0);
 

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 const GRAVITY: number = -245.25;
-
+const DRAG: number = 0.005;
 export class Ball {
     private sphere;
     // private pos: THREE.Vector3;
@@ -15,7 +15,10 @@ export class Ball {
         this
         // pos
         this.sphere.position.y = 20;
+        this.sphere.position.z = -36;
         this.vel = new THREE.Vector3();
+        // this.vel.x = 50;
+        this.vel.z = 50;
         this.clock = new THREE.Clock();
     }
 
@@ -25,15 +28,33 @@ export class Ball {
 
     public update() {
         let t: number = this.clock.getDelta();
+        //TODO: check dynamic t/frame
+        //let t: number = 0.01;
+        console.log(this.vel.x + " " +this.vel.y + " " + this.vel.z);
+        if (this.sphere.position.y <= 0.51 && Math.abs(this.vel.y) <= 2) {
+            this.sphere.position.y = 0.5;
+            return;
+            if(Math.abs(this.vel.x) <= 0.1 && Math.abs(this.vel.z) <= 0.1) {
+            }
+        }
 
         // update position according to velocity
-        this.sphere.position.y = this.vel.y * t + this.sphere.position.y;
-        
         if(this.sphere.position.y <= 0.5) {
-            this.vel.y = Math.abs(this.vel.y);
+            this.vel.y = Math.abs(this.vel.y) - 1;
         } else {
-            this.vel.y = GRAVITY * t + this.vel.y;
+            // Velocity combines gravity and drag acceleration
+            let drag = new THREE.Vector3();
+            drag.copy(this.vel).multiplyScalar(-1 * DRAG);
+            this.vel.x = drag.x + this.vel.x;
+            this.vel.y = GRAVITY * t + drag.y + this.vel.y;
+            this.vel.z = drag.z + this.vel.z;
+
         }
+
+        this.sphere.position.x = this.vel.x * t + this.sphere.position.x;
+        this.sphere.position.y = this.vel.y * t + this.sphere.position.y;
+        this.sphere.position.z = this.vel.z * t + this.sphere.position.z;
+        
         // update velocity based on gravity
     }
 
