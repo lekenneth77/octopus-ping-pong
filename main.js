@@ -23,13 +23,21 @@ plane.receiveShadow = true;
 scene.add( plane );
 plane.rotateX(Math.PI/2);
 
-//plane2
+//net
 const netGeo = new THREE.PlaneGeometry( 39, 5 );
 const netMat = new THREE.MeshBasicMaterial( {color: 0xff0000, side: THREE.DoubleSide} );
 const net = new THREE.Mesh( netGeo, netMat );
 net.position.y = 2.5;
 scene.add( net );
-// net.rotateX(Math.PI/2);
+
+//floor
+const floorGeo = new THREE.PlaneGeometry( 1000, 1000 );
+const floorMat = new THREE.MeshPhongMaterial( {color: 0x765432, side: THREE.DoubleSide} );
+const floor = new THREE.Mesh( floorGeo, floorMat );
+// floor.receiveShadow = true;
+scene.add( floor );
+floor.position.y = -21;
+floor.rotateX(Math.PI/2);
 
 //add light
 const light = new THREE.DirectionalLight(0xffffff);
