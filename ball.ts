@@ -36,11 +36,20 @@ export class Ball {
         // let t: number = 0.02;
 
         // // update position according to velocity
+        if (this.sphere.position.y <= 4 && Math.abs(this.sphere.position.z) <= 1.2 && Math.abs(this.sphere.position.x) < 19.5) {
+            this.vel.x = 0;
+            this.vel.z = 0;
+            this.vel.y = 0.8 * this.vel.y;
+            if (this.vel.y <= 0.005 && this.sphere.position.y <= 0.5) {
+                this.sphere.position.y = 0.5;
+                return;
+            }
+        }
        
         if (Math.abs(this.sphere.position.z) >= 34.5 && Math.abs(this.sphere.position.x) < 19.5) { 
             this.vel.z = this.vel.z * -1;
             this.vel.x = this.vel.x * -1;
-            this.vel.y = 40;
+            // this.vel.y = 40;
 
             //scale by speed in z and height
         }
@@ -56,9 +65,9 @@ export class Ball {
             // Velocity combines gravity and drag acceleration
             let drag = new THREE.Vector3();
             drag.copy(this.vel).multiplyScalar(-1 * DRAG);
-            // this.vel.x = drag.x + this.vel.x;
+            this.vel.x = drag.x + this.vel.x;
             this.vel.y = GRAVITY * t + drag.y + this.vel.y;
-            // this.vel.z = drag.z + this.vel.z;
+            this.vel.z = drag.z + this.vel.z;
         }
 
         this.sphere.position.x = this.vel.x * t + this.sphere.position.x;

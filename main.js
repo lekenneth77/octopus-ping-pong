@@ -56,8 +56,8 @@ light.shadow.camera.near = 0.5; // default
 light.shadow.camera.far = 500; // default
 
 //camera position
-camera.position.z = 50;
-camera.position.x = 0;
+camera.position.z = -30;
+camera.position.x = 30;
 camera.position.y = 20;
 camera.lookAt(0, 0, 0);
 
