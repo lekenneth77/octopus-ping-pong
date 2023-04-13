@@ -12,12 +12,13 @@ export class Ball {
         const material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
         const sphere = new THREE.Mesh( geometry, material );
         this.sphere = sphere;
+        sphere.castShadow = true;
         this
         // pos
         this.sphere.position.y = 20;
-        this.sphere.position.z = -36;
+        this.sphere.position.z = 0;
         this.vel = new THREE.Vector3();
-        // this.vel.x = 50;
+        // this.vel.x = 20;
         this.vel.z = 50;
         this.clock = new THREE.Clock();
     }
@@ -39,6 +40,14 @@ export class Ball {
         }
 
         // update position according to velocity
+        if (Math.abs(this.sphere.position.x) >= 19.5) {
+            this.vel.x = this.vel.x * -1;
+        }
+        if (Math.abs(this.sphere.position.z) >= 34.5) { 
+            this.vel.z = this.vel.z * -1;
+            this.vel.z = this.vel.z < 0 ? Math.random() * -40 - 40 : Math.random() * 40 + 40;
+            this.vel.y = 80;
+        }
         if(this.sphere.position.y <= 0.5) {
             this.vel.y = Math.abs(this.vel.y) - 1;
         } else {
