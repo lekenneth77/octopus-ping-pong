@@ -24,7 +24,7 @@ scene.add( plane );
 plane.rotateX(Math.PI/2);
 
 //net
-const netGeo = new THREE.PlaneGeometry( 39, 5 );
+const netGeo = new THREE.PlaneGeometry( 39, 4 );
 const netMat = new THREE.MeshBasicMaterial( {color: 0xff0000, side: THREE.DoubleSide} );
 const net = new THREE.Mesh( netGeo, netMat );
 net.position.y = 2.5;
@@ -57,13 +57,25 @@ light.shadow.camera.far = 500; // default
 
 //camera position
 camera.position.z = 50;
-camera.position.x = 50;
-camera.position.y = 42;
+camera.position.x = 0;
+camera.position.y = 20;
 camera.lookAt(0, 0, 0);
 
 function animate() {
 	requestAnimationFrame( animate );
 	ball.update();
+	// camera.lookAt(ball.sphere.position);
 	renderer.render( scene, camera );
 }
 animate();
+
+addEventListener("keydown", (event) => {
+	switch(event.key) {
+		case('p'):
+			ball.reset();
+			break;
+		default:
+			break;
+	}
+});
+
