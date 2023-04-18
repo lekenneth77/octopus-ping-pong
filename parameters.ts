@@ -1,4 +1,4 @@
-export const CONST = {
+export let CONST = {
     GRAVITY: -245.25,
     FLOOR_XZ_ABSORB: 0.99,
     FLOOR_Y_ABSORB: 0.5,    

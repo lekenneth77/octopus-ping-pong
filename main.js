@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import { Ball } from '/ball';
+import { Octopus } from '/octopus';
 import { Vector3 } from 'three';
 import { FlyControls } from 'three/addons/controls/FlyControls.js';
 import {CONST} from './parameters';
+import { GUI } from 'dat.gui'
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -25,7 +27,10 @@ controls.autoForward = false;
 controls.dragToLook = true;
 
 
-let ball = new Ball();
+
+let playerOne = new Octopus();
+let playerTwo = new Octopus();
+let ball = new Ball(playerOne, playerTwo);
 scene.add( ball.getBall() );
 
 //plane
@@ -75,24 +80,69 @@ camera.position.x = 0;
 camera.position.y = 80;
 camera.lookAt(0, 0, 0);
 let followAt = false;
+let freeze = false;
+
+const gui = new GUI();
+
+const sceneFolder = gui.addFolder('Underwater');
+sceneFolder.add(CONST, 'DRAG', 0, 1);
+sceneFolder.open();
+
+const ballFolder = gui.addFolder('Ball Initial State');
+let initialPos = {pos_x: 15, pos_y: 10, pos_z: -34};
+let initialVel = {vel_x: 0, vel_y: 0, vel_z: 120};
+ballFolder.add(initialPos, 'pos_x', -CONST.TABLE_W / 2, CONST.TABLE_W / 2);
+ballFolder.add(initialPos, 'pos_y', 0, 40);
+ballFolder.add(initialPos, 'pos_z', -CONST.TABLE_L / 2, CONST.TABLE_L / 2);
+ballFolder.add(initialVel, 'vel_x', -200, 200);
+ballFolder.add(initialVel, 'vel_y', 0, 100);
+ballFolder.add(initialVel, 'vel_z', -200, 200);
+ballFolder.open();
+
+addGuiOctopus("Octopus One", playerOne).open();
+addGuiOctopus("Octopus Two", playerTwo).open();
+
+const player1Geo = new THREE.BoxGeometry( 1, 1, 1 );
+const player1Mat = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+const player1 = new THREE.Mesh( player1Geo, player1Mat );
+scene.add( player1 );
+player1.position.z = -40;
 
 function animate() {
 	requestAnimationFrame( animate );
 	const deltaT = clock.getDelta();
-	ball.update(deltaT);
 	controls.update(deltaT);
 	if (followAt) {
 		camera.lookAt(ball.sphere.position);
+	}
+	if (!freeze) {
+		ball.update(deltaT);
 	}
 	renderer.render( scene, camera );
 }
 animate();
 
+function addGuiOctopus(name, octopus) {
+	const playerFolder = gui.addFolder(name);
+	playerFolder.add(octopus, 'horizontalAngle', -90, 90);
+	playerFolder.add(octopus, 'verticalAngle', -90, 90);
+	playerFolder.add(octopus, 'force', 0, 20);
+	playerFolder.add(octopus.spinAxis, 'x', -1, 1);
+	playerFolder.add(octopus.spinAxis, 'y', -1, 1);
+	playerFolder.add(octopus.spinAxis, 'z', -1, 1);
+	playerFolder.add(octopus, 'spinStrength', 0, 200);
+	return playerFolder;
+}
+
 addEventListener("keydown", (event) => {
 	switch(event.key.toLowerCase()) {
 		//Reset Round
+		case(' '):
+			freeze = !freeze;
+			break;
 		case('p'):
-			ball.reset();
+			ball.reset(new Vector3(initialPos.pos_x, initialPos.pos_y, initialPos.pos_z),
+				 new Vector3(initialVel.vel_x, initialVel.vel_y, initialVel.vel_z));
 			break;
 		case('1'):
 			//above table view
@@ -109,7 +159,15 @@ addEventListener("keydown", (event) => {
 			camera.lookAt(0, 0, 0);
 			break;
 		case('3'):
+			//player 1 pov
 			camera.position.z = - (CONST.TABLE_L / 2) - 20;
+			camera.position.x = 0;
+			camera.position.y = 20;
+			camera.lookAt(0, 0, 0);
+			break;
+		case('4'):
+			//player 2 pov
+			camera.position.z = (CONST.TABLE_L / 2) - 20;
 			camera.position.x = 0;
 			camera.position.y = 20;
 			camera.lookAt(0, 0, 0);

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 // import * as PP from  './parameters.js';
 import { CONST } from './parameters.js';
 import { normalizePath } from 'vite';
+import {Octopus} from './octopus';
 
 
 export class Ball {
@@ -12,29 +13,39 @@ export class Ball {
 
     private spinAxis: THREE.Vector3;
     private spinStrength: number;
+    private playerOne: Octopus;
+    private playerTwo: Octopus;
+    private playerSide: number;
+    private hitSide: number;
 
-    constructor() { 
+    constructor(playerOne, playerTwo) { 
+        this.playerOne = playerOne;
+        this.playerTwo = playerTwo;
         const geometry = new THREE.SphereGeometry(CONST.BALL_RAD);
         const material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
         const sphere = new THREE.Mesh(geometry, material);
         this.sphere = sphere;
         sphere.castShadow = true;
-        this.reset();
+        this.reset(new THREE.Vector3(-19, 20, -39), new THREE.Vector3(0, 0, 120));
+    }
+
+    private getSide() {
+       return this.sphere.position.z <= 0 ? 1 : 2;
     }
     
-    public reset() {
-        this.sphere.position.x = 0;
-        this.sphere.position.y = 20;
-        this.sphere.position.z = -34;   
-        this.vel = new THREE.Vector3();
+    public reset(pos: THREE.Vector3, vel: THREE.Vector3) {
+        this.sphere.position.x = pos.x;
+        this.sphere.position.y = pos.y;
+        this.sphere.position.z = pos.z;   
+        this.vel = vel;
         this.acc = new THREE.Vector3();
-
         this.spinAxis = new THREE.Vector3();
         this.spinAxis.x = 1;
         // this.spinAxis.z = .3;
-        this.spinStrength = 80;
-        this.vel.z = 120;
+        this.spinStrength = 0;
         // this.vel.x = 40;
+        this.playerSide = this.getSide();
+        this.hitSide = 0;
     }
 
     public getBall() {
@@ -96,6 +107,7 @@ export class Ball {
         //     return;
         // }
 
+
         // //if hit the table (within table bounds) //TODO add y range?
         // if(this.sphere.position.y <= CONST.BALL_RAD && Math.abs(this.sphere.position.x) <= CONST.TABLE_W / 2 && Math.abs(this.sphere.position.z) <= CONST.TABLE_L / 2) {
         //     this.vel.y = Math.abs(this.vel.y) - 1;
@@ -105,9 +117,10 @@ export class Ball {
         //     dir = dir.normalize().multiplyScalar( this.spinStrength * .8);
         //     this.vel.addVectors(this.vel, dir);
             
-        //     this.spinStrength *= .8;
-        //     return;
-        // } 
+        //   this.spinStrength *= .8;
+            this.hitSide++;
+            return;
+        } 
          
         // // hit the floor
         // if (this.sphere.position.y <= CONST.FLOOR_Y_POS) {
@@ -118,8 +131,6 @@ export class Ball {
         }
         //} 
         
-
-
     }
 
 
