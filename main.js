@@ -23,7 +23,6 @@ controls.domElement = renderer.domElement;
 controls.rollSpeed = CAM_ROLL_SPD;
 controls.autoForward = false;
 controls.dragToLook = true;
-let cam_on = false;
 
 
 let ball = new Ball();
@@ -79,9 +78,7 @@ function animate() {
 	requestAnimationFrame( animate );
 	const deltaT = clock.getDelta();
 	ball.update(deltaT);
-	if (cam_on) {
-		controls.update(deltaT);
-	}
+	controls.update(deltaT);
 	// camera.lookAt(ball.sphere.position);
 	renderer.render( scene, camera );
 }
@@ -92,10 +89,6 @@ addEventListener("keydown", (event) => {
 		//Reset Round
 		case('p'):
 			ball.reset();
-			break;
-		//Turn Fly Camera On/Off
-		case('o'):
-			cam_on = !cam_on;
 			break;
 		default:
 			break;
