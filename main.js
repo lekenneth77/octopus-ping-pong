@@ -88,6 +88,11 @@ ballFolder.add(ball.sphere.position, 'y', 0, 40);
 ballFolder.add(ball.sphere.position, 'z', 0, Math.PI * 2);
 ballFolder.open();
 
+const player1Geo = new THREE.BoxGeometry( 1, 1, 1 );
+const player1Mat = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+const player1 = new THREE.Mesh( player1Geo, player1Mat );
+scene.add( player1 );
+player1.position.z = -40;
 
 function animate() {
 	requestAnimationFrame( animate );
