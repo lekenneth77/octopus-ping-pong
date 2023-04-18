@@ -1,11 +1,12 @@
 export let CONST = {
     GRAVITY: -245.25,
-    DRAG: 0.005,
     FLOOR_XZ_ABSORB: 0.99,
     FLOOR_Y_ABSORB: 0.5,    
     
-    // Ping pong ball dimensions
+    // Ping pong ball 
     BALL_RAD: 0.5,
+    BALL_MASS: 1,
+    BALL_DRAG: 0.005,
 
     // Table dimensions
     TABLE_W: 39,
