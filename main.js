@@ -85,7 +85,7 @@ let freeze = false;
 const gui = new GUI();
 
 const sceneFolder = gui.addFolder('Underwater');
-sceneFolder.add(CONST, 'DRAG', 0, 1);
+sceneFolder.add(CONST, 'BALL_DRAG', 0, 1);
 sceneFolder.open();
 
 const ballFolder = gui.addFolder('Ball Initial State');

@@ -79,7 +79,7 @@ export class Ball {
 
 
         // collisions
-        if (this.sphere.position.y - 1 <= CONST.BALL_RAD && Math.abs(this.sphere.position.x) <= CONST.TABLE_W / 2 && Math.abs(this.sphere.position.z) <= CONST.TABLE_L / 2) {
+        if (this.sphere.position.y - 2 <= CONST.BALL_RAD && Math.abs(this.sphere.position.x) <= CONST.TABLE_W / 2 && Math.abs(this.sphere.position.z) <= CONST.TABLE_L / 2) {
             // table collision
             new_acc = new THREE.Vector3()
             new_vel = new THREE.Vector3(this.vel.x, Math.abs(this.vel.y), this.vel.z); // lose energy?
@@ -118,9 +118,9 @@ export class Ball {
         //     this.vel.addVectors(this.vel, dir);
             
         //   this.spinStrength *= .8;
-            this.hitSide++;
-            return;
-        } 
+        //     this.hitSide++;
+        //     return;
+        // } 
          
         // // hit the floor
         // if (this.sphere.position.y <= CONST.FLOOR_Y_POS) {
@@ -128,7 +128,7 @@ export class Ball {
         //     this.vel.y = Math.abs(this.vel.y);
         //     this.vel.y *= CONST.FLOOR_Y_ABSORB;
         //     this.vel.z *= CONST.FLOOR_XZ_ABSORB; else if () {
-        }
+        // }
         //} 
         
     }
