@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import { Ball } from '/ball';
+import { Octopus } from '/octopus';
 import { Vector3 } from 'three';
 import { FlyControls } from 'three/addons/controls/FlyControls.js';
 import {CONST} from './parameters';
+import { GUI } from 'dat.gui'
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -25,7 +27,10 @@ controls.autoForward = false;
 controls.dragToLook = true;
 
 
-let ball = new Ball();
+
+let playerOne = new Octopus();
+let playerTwo = new Octopus();
+let ball = new Ball(playerOne, playerTwo);
 scene.add( ball.getBall() );
 
 //plane
@@ -75,6 +80,14 @@ camera.position.x = 0;
 camera.position.y = 80;
 camera.lookAt(0, 0, 0);
 let followAt = false;
+
+const gui = new GUI()
+const ballFolder = gui.addFolder('Ball');
+ballFolder.add(ball.sphere.position, 'x', -CONST.TABLE_W / 2, CONST.TABLE_W / 2);
+ballFolder.add(ball.sphere.position, 'y', 0, 40);
+ballFolder.add(ball.sphere.position, 'z', 0, Math.PI * 2);
+ballFolder.open();
+
 
 function animate() {
 	requestAnimationFrame( animate );

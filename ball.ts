@@ -2,6 +2,7 @@ import * as THREE from 'three';
 // import * as PP from  './parameters.js';
 import { CONST } from './parameters.js';
 import { normalizePath } from 'vite';
+import {Octopus} from './octopus';
 
 
 export class Ball {
@@ -10,8 +11,12 @@ export class Ball {
     private vel: THREE.Vector3;
     private spinAxis: THREE.Vector3;
     private spinStrength: number;
+    private playerOne: Octopus;
+    private playerTwo: Octopus;
 
-    constructor() { 
+    constructor(playerOne, playerTwo) { 
+        this.playerOne = playerOne;
+        this.playerTwo = playerTwo;
         const geometry = new THREE.SphereGeometry(CONST.BALL_RAD);
         const material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
         const sphere = new THREE.Mesh(geometry, material);
