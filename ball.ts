@@ -10,6 +10,8 @@ export class Ball {
     private vel: THREE.Vector3;
     private spinAxis: THREE.Vector3;
     private spinStrength: number;
+    private playerSide: number;
+    private hitSide: number;
 
     constructor() { 
         const geometry = new THREE.SphereGeometry(CONST.BALL_RAD);
@@ -18,6 +20,10 @@ export class Ball {
         this.sphere = sphere;
         sphere.castShadow = true;
         this.reset();
+    }
+
+    private getSide() {
+       return this.sphere.position.z <= 0 ? 1 : 2;
     }
     
     public reset() {
@@ -28,9 +34,11 @@ export class Ball {
         this.spinAxis = new THREE.Vector3();
         this.spinAxis.x = 1;
         // this.spinAxis.z = .3;
-        this.spinStrength = 80;
-        this.vel.z = 120;
+        this.spinStrength = 0;
+        this.vel.z = 200;
         // this.vel.x = 40;
+        this.playerSide = this.getSide();
+        this.hitSide = 0;
     }
 
     public getBall() {
@@ -42,7 +50,11 @@ export class Ball {
         this.sphere.position.x = this.vel.x * t + this.sphere.position.x;
         this.sphere.position.y = this.vel.y * t + this.sphere.position.y;
         this.sphere.position.z = this.vel.z * t + this.sphere.position.z;
-
+        
+        if(this.getSide() !== this.playerSide) {
+            this.playerSide = this.getSide();
+            this.hitSide = 0;
+        }
         // Update velocity 
         // Conditions: Net collision, table boundary, table hit, no collision
 
@@ -58,7 +70,7 @@ export class Ball {
         }
        
         //table bondary
-        if (Math.abs(this.sphere.position.z) >= CONST.TABLE_L / 2 && Math.abs(this.sphere.position.x) < CONST.TABLE_W / 2) { 
+        if (this.hitSide === 1 && Math.abs(this.sphere.position.z) >= CONST.TABLE_L / 2 && Math.abs(this.sphere.position.x) < CONST.TABLE_W / 2) { 
             this.vel.z = this.vel.z * -1;
             this.vel.x = this.vel.x * -1;
             this.vel.y = 40;
@@ -75,6 +87,7 @@ export class Ball {
             this.vel.addVectors(this.vel, dir);
             
             this.spinStrength *= .8;
+            this.hitSide++;
             return;
         } 
          
