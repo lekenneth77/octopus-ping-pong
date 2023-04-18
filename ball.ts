@@ -21,14 +21,14 @@ export class Ball {
     }
     
     public reset() {
-        this.sphere.position.x = -19;
+        this.sphere.position.x = 0;
         this.sphere.position.y = 20;
         this.sphere.position.z = -34;   
         this.vel = new THREE.Vector3();
         this.spinAxis = new THREE.Vector3();
-        this.spinAxis.x = .7;
-        this.spinAxis.z = .3;
-        this.spinStrength = 40;
+        this.spinAxis.x = 1;
+        // this.spinAxis.z = .3;
+        this.spinStrength = 80;
         this.vel.z = 120;
         // this.vel.x = 40;
     }
@@ -47,18 +47,18 @@ export class Ball {
         // Conditions: Net collision, table boundary, table hit, no collision
 
         //net collision TOD
-        // if (this.sphere.position.y <= CONST.NET_Y && Math.abs(this.sphere.position.z) <= CONST.BALL_RAD * 2 && Math.abs(this.sphere.position.x) < CONST.TABLE_X / 2) {
-        //     this.vel.x = 0;
-        //     this.vel.z = 0;
-        //     this.vel.y = 0.8 * this.vel.y;
-        //     if (this.vel.y <= 0.005 && this.sphere.position.y <= CONST.BALL_RAD) {
-        //         this.sphere.position.y = CONST.BALL_RAD;
-        //         return;
-        //     }
-        // }
+        if (this.sphere.position.y <= CONST.NET_H && Math.abs(this.sphere.position.z) <= CONST.BALL_RAD * 2 && Math.abs(this.sphere.position.x) < CONST.TABLE_W / 2) {
+            this.vel.x = 0;
+            this.vel.z = 0;
+            this.vel.y = 0.8 * this.vel.y;
+            if (this.vel.y <= 0.005 && this.sphere.position.y <= CONST.BALL_RAD) {
+                this.sphere.position.y = CONST.BALL_RAD;
+                return;
+            }
+        }
        
         //table bondary
-        if (Math.abs(this.sphere.position.z) >= CONST.TABLE_Z / 2 && Math.abs(this.sphere.position.x) < CONST.TABLE_X / 2) { 
+        if (Math.abs(this.sphere.position.z) >= CONST.TABLE_L / 2 && Math.abs(this.sphere.position.x) < CONST.TABLE_W / 2) { 
             this.vel.z = this.vel.z * -1;
             this.vel.x = this.vel.x * -1;
             this.vel.y = 40;
@@ -66,7 +66,7 @@ export class Ball {
         }
 
         //if hit the table (within table bounds) //TODO add y range?
-        if(this.sphere.position.y <= CONST.BALL_RAD && Math.abs(this.sphere.position.x) <= CONST.TABLE_X / 2 && Math.abs(this.sphere.position.z) <= CONST.TABLE_Z / 2) {
+        if(this.sphere.position.y <= CONST.BALL_RAD && Math.abs(this.sphere.position.x) <= CONST.TABLE_W / 2 && Math.abs(this.sphere.position.z) <= CONST.TABLE_L / 2) {
             this.vel.y = Math.abs(this.vel.y) - 1;
             // we have the original velocity of the ball
             // project the axis of rotation

@@ -8,14 +8,15 @@ export const CONST = {
     BALL_RAD: 0.5,
 
     // Table dimensions
-    TABLE_X: 39,
-    TABLE_Z: 69,
+    TABLE_W: 39,
+    TABLE_L: 69,
+    TABLE_H: 1,
     TABLE_Y: 0,
     
     // Net Dimensions
-    NET_X: 39,
-    NET_Y: 4,
-    NET_Z: 0,
+    NET_L: 39,
+    NET_H: 4,
+    NET_W: 0.2,
 
     //Floor 
     FLOOR_XZ: 1000,

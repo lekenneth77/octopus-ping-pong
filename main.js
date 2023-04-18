@@ -29,18 +29,19 @@ let ball = new Ball();
 scene.add( ball.getBall() );
 
 //plane
-const planeGeo = new THREE.PlaneGeometry( CONST.TABLE_X, CONST.TABLE_Z );
+const planeGeo = new THREE.BoxGeometry( CONST.TABLE_W, CONST.TABLE_L, CONST.TABLE_H);
 const planeMat = new THREE.MeshPhongMaterial( {color: 0x0000ff, side: THREE.DoubleSide} );
 const plane = new THREE.Mesh( planeGeo, planeMat );
 plane.receiveShadow = true;
 scene.add( plane );
+plane.position.y = - (CONST.TABLE_H);
 plane.rotateX(Math.PI/2);
 
 //net
-const netGeo = new THREE.PlaneGeometry( CONST.NET_X, CONST.NET_Y );
+const netGeo = new THREE.BoxGeometry( CONST.NET_L, CONST.NET_H, CONST.NET_W  );
 const netMat = new THREE.MeshBasicMaterial( {color: 0xff0000, side: THREE.DoubleSide} );
 const net = new THREE.Mesh( netGeo, netMat );
-net.position.y = CONST.NET_Y / 2;
+net.position.y = CONST.NET_H / 2;
 scene.add( net );
 
 //floor
@@ -71,24 +72,50 @@ light.shadow.camera.far = 500; // default
 //camera position
 camera.position.z = 0;
 camera.position.x = 0;
-camera.position.y = 180;
+camera.position.y = 80;
 camera.lookAt(0, 0, 0);
+let followAt = false;
 
 function animate() {
 	requestAnimationFrame( animate );
 	const deltaT = clock.getDelta();
 	ball.update(deltaT);
 	controls.update(deltaT);
-	// camera.lookAt(ball.sphere.position);
+	if (followAt) {
+		camera.lookAt(ball.sphere.position);
+	}
 	renderer.render( scene, camera );
 }
 animate();
 
 addEventListener("keydown", (event) => {
-	switch(event.key) {
+	switch(event.key.toLowerCase()) {
 		//Reset Round
 		case('p'):
 			ball.reset();
+			break;
+		case('1'):
+			//above table view
+			camera.position.z = 0;
+			camera.position.x = 0;
+			camera.position.y = 80;
+			camera.lookAt(0, 0, 0);
+			break;
+		case('2'):
+			//side table view
+			camera.position.z = 0;
+			camera.position.x = 40;
+			camera.position.y = 10;
+			camera.lookAt(0, 0, 0);
+			break;
+		case('3'):
+			camera.position.z = - (CONST.TABLE_L / 2) - 20;
+			camera.position.x = 0;
+			camera.position.y = 20;
+			camera.lookAt(0, 0, 0);
+			break;
+		case('`'):
+			followAt = !followAt;
 			break;
 		default:
 			break;
