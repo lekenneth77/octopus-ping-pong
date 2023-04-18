@@ -24,23 +24,22 @@ export class Ball {
         const sphere = new THREE.Mesh(geometry, material);
         this.sphere = sphere;
         sphere.castShadow = true;
-        this.reset();
+        this.reset(new THREE.Vector3(-19, 20, -39), new THREE.Vector3(0, 0, 120));
     }
 
     private getSide() {
        return this.sphere.position.z <= 0 ? 1 : 2;
     }
     
-    public reset() {
-        this.sphere.position.x = 0;
-        this.sphere.position.y = 20;
-        this.sphere.position.z = -34;   
-        this.vel = new THREE.Vector3();
+    public reset(pos: THREE.Vector3, vel: THREE.Vector3) {
+        this.sphere.position.x = pos.x;
+        this.sphere.position.y = pos.y;
+        this.sphere.position.z = pos.z;   
+        this.vel = vel;
         this.spinAxis = new THREE.Vector3();
         this.spinAxis.x = 1;
         // this.spinAxis.z = .3;
         this.spinStrength = 0;
-        this.vel.z = 200;
         // this.vel.x = 40;
         this.playerSide = this.getSide();
         this.hitSide = 0;
@@ -50,6 +49,7 @@ export class Ball {
         return this.sphere;
     }
     
+    //TODO check to see if player hits side twice
     public update(t) {
         // update position according to velocity
         this.sphere.position.x = this.vel.x * t + this.sphere.position.x;
@@ -114,8 +114,6 @@ export class Ball {
         this.vel.x = drag.x + this.vel.x;
         this.vel.y = CONST.GRAVITY * t + drag.y + this.vel.y;
         this.vel.z = drag.z + this.vel.z;
-    
-
     }
 
 

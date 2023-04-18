@@ -6,6 +6,7 @@ export class Octopus {
     public verticalAngle: number;
     public force: number;
     public spinAxis: THREE.Vector3;
+
     public spinStrength: number;
 
     constructor() {
