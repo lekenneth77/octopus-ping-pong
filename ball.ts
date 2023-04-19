@@ -40,10 +40,7 @@ export class Ball {
         this.vel = vel;
         this.acc = new THREE.Vector3();
         this.spinAxis = new THREE.Vector3();
-        this.spinAxis.x = 1;
-        // this.spinAxis.z = .3;
         this.spinStrength = 0;
-        // this.vel.x = 40;
         this.playerSide = this.getSide();
         this.hitSide = 0;
     }

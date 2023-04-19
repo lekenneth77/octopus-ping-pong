@@ -3,6 +3,7 @@ import { Ball } from '/ball';
 import { Octopus } from '/octopus';
 import { Vector3 } from 'three';
 import { FlyControls } from 'three/addons/controls/FlyControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import {CONST} from './parameters';
 import { GUI } from 'dat.gui'
 
@@ -18,8 +19,8 @@ const clock = new THREE.Clock();
 
 //first person camera
 const controls = new FlyControls(camera, renderer.domElement);
-const CAM_MOVE_SPD = 100;
-const CAM_ROLL_SPD = Math.PI / 4;
+const CAM_MOVE_SPD = CONST.CAM_MV_SPD;
+const CAM_ROLL_SPD = CONST.CAM_ROLL_SPD;
 controls.movementSpeed = CAM_MOVE_SPD;
 controls.domElement = renderer.domElement;
 controls.rollSpeed = CAM_ROLL_SPD;
@@ -63,16 +64,17 @@ const light = new THREE.DirectionalLight(0xffffff);
 light.position.set(0, 50, 0);
 light.castShadow = true;
 scene.add(light);
-light.shadow.camera.left = -1 * (CONST.TABLE_X / 2);
-light.shadow.camera.right = CONST.TABLE_X / 2;
-light.shadow.camera.bottom = -1 * (CONST.TABLE_Z / 2);
-light.shadow.camera.top = CONST.TABLE_Z / 2;
+light.shadow.camera.left = -1 * (CONST.TABLE_W / 2);
+light.shadow.camera.right = CONST.TABLE_W / 2;
+light.shadow.camera.bottom = -1 * (CONST.TABLE_L / 2);
+light.shadow.camera.top = CONST.TABLE_L / 2;
 
 //Set up shadow properties for the light
 light.shadow.mapSize.width = 512; // default
 light.shadow.mapSize.height = 512; // default
 light.shadow.camera.near = 0.5; // default
 light.shadow.camera.far = 500; // default
+
 
 //camera position
 camera.position.z = 0;
@@ -81,6 +83,36 @@ camera.position.y = 80;
 camera.lookAt(0, 0, 0);
 let followAt = false;
 let freeze = false;
+
+const loader = new GLTFLoader();
+let modelOne = new THREE.Object3D();
+loader.load( './models/set_purple_octboy.glb', function ( gltf ) {
+	modelOne.add(gltf.scene);
+	modelOne.castShadow = true;
+	modelOne.receiveShadow = true;
+	modelOne.scale.set(2, 2, 2);
+	scene.add(modelOne);
+},);
+
+let modelTwo = new THREE.Object3D();
+loader.load( './models/set_red_octboy.glb', function ( gltf ) {
+	modelTwo.add(gltf.scene);
+	modelTwo.castShadow = true;
+	modelTwo.receiveShadow = true;
+	modelTwo.scale.set(2, 2, 2);
+	scene.add(modelTwo);
+},);
+
+
+modelOne.position.set ( 0, 2, -CONST.TABLE_L / 2);
+modelOne.rotation.set(0, Math.PI / 2, 0);
+modelTwo.position.set(0, 2, CONST.TABLE_L / 2);
+modelTwo.rotation.set(0, -Math.PI / 2, 0);
+
+
+//       bus.body.rotation.set ( 0, -1.5708, 0 );
+//       bus.body.castShadow = true;
+//       bus.frame.add(bus.body);
 
 const gui = new GUI();
 
@@ -167,7 +199,7 @@ addEventListener("keydown", (event) => {
 			break;
 		case('4'):
 			//player 2 pov
-			camera.position.z = (CONST.TABLE_L / 2) - 20;
+			camera.position.z = (CONST.TABLE_L / 2) + 20;
 			camera.position.x = 0;
 			camera.position.y = 20;
 			camera.lookAt(0, 0, 0);

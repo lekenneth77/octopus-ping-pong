@@ -21,5 +21,10 @@ export let CONST = {
 
     //Floor 
     FLOOR_XZ: 1000,
-    FLOOR_Y_POS: -20
+    FLOOR_Y_POS: -20,
+
+    //Camera
+    CAM_MV_SPD: 100,
+    CAM_ROLL_SPD: Math.PI / 4
+
 }
