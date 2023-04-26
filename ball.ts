@@ -7,7 +7,8 @@ import {Octopus} from './octopus';
 
 export class Ball {
     
-    private sphere; // pos stored in sphere
+    private sphere;
+    private pos: THREE.Vector3;
     private vel: THREE.Vector3;
     private acc: THREE.Vector3;
 
@@ -30,19 +31,24 @@ export class Ball {
     }
 
     private getSide() {
-       return this.sphere.position.z <= 0 ? 1 : 2;
+       return this.pos.z <= 0 ? 1 : 2;
+    }
+
+    private updateSphere() {
+        this.sphere.position.x = this.pos.x;
+        this.sphere.position.y = this.pos.y;
+        this.sphere.position.z = this.pos.z; 
     }
     
     public reset(pos: THREE.Vector3, vel: THREE.Vector3) {
-        this.sphere.position.x = pos.x;
-        this.sphere.position.y = pos.y;
-        this.sphere.position.z = pos.z;   
+        this.pos = pos  
         this.vel = vel;
         this.acc = new THREE.Vector3();
         this.spinAxis = new THREE.Vector3();
         this.spinStrength = 0;
         this.playerSide = this.getSide();
         this.hitSide = 0;
+        this.updateSphere()
     }
 
     public getBall() {
@@ -50,56 +56,86 @@ export class Ball {
     }
     
     // get acceleration vector (does not change state)
-    private applyForce(hit=new THREE.Vector3()) {
+    private applyForce(vel) {
         let grav_acc = new THREE.Vector3(0, CONST.GRAVITY, 0);
-        let drag_force = this.vel.clone().multiply(this.vel).multiplyScalar(-1 * CONST.BALL_DRAG); // const * vel^2
+        let drag_force = vel.clone().multiply(vel).multiplyScalar(-1 * CONST.BALL_DRAG); // const * vel^2
         let drag_acc = drag_force.multiplyScalar(1/CONST.BALL_MASS); // no effect
 
-        return grav_acc.add(drag_acc).add(hit);
+        return new THREE.Vector3(0, CONST.GRAVITY, 0);//grav_acc.add(drag_acc);
+    }
+
+    // Predict point of collision for just table for now
+    private predictCollision(pos, vel, acc, dt){
+        // newpos = pos + vel*dt + acc*(dt*dt*0.5);
+        let t = -1 * Math.sqrt(2*acc.y*(CONST.TABLE_Y - pos.y + CONST.BALL_RAD) + vel.y*vel.y) + vel.y
+        console.log("T:" , t)
+        t = Math.abs(t / acc.y)
+        let q = this.verlet(pos, vel, acc, t)
+        return {
+            pos: q.pos,
+            vel: q.vel,
+            acc: q.acc,
+            dt: t
+        }
+    }
+
+    private verlet(old_pos, old_vel, old_acc, dt) {
+        // calculate new accleration
+        let new_acc = this.applyForce(old_vel);
+        // calculate new velocity
+        let new_vel = old_vel.clone().add(
+            old_acc.clone().add(new_acc).multiplyScalar(dt * 0.5) // + (acc+new_acc)*(dt*0.5);
+        )
+        // calculate new position
+        let new_pos = old_pos.clone().add( // pos
+            old_vel.clone().multiplyScalar(dt) // + vel*dt
+        ).add(
+            old_acc.clone().multiplyScalar(dt*dt*0.5) // + acc*(0.5 * dt^2)
+        )
+
+        return {
+            pos: new_pos,
+            vel: new_vel,
+            acc: new_acc
+        }
     }
 
     public update(dt) {
-        // calculate new accleration
-        let new_acc = this.applyForce();
+        let update = this.verlet(this.pos, this.vel, this.acc, dt)
+        // detect table collision a posteriori
+        if (this.pos.y - CONST.BALL_RAD > CONST.TABLE_Y 
+            && update.pos.y - CONST.BALL_RAD <= CONST.TABLE_Y) 
+            {
 
-        // calculate new velocity
-        let new_vel = this.vel.clone().add(
-            this.acc.clone().add(new_acc).multiplyScalar(dt * 0.5) // + (acc+new_acc)*(dt*0.5);
-        )
-
-        // calculate new position
-        let new_pos = this.sphere.position.clone().add( // pos
-            this.vel.clone().multiplyScalar(dt) // + vel*dt
-        ).add(
-            this.acc.multiplyScalar(dt*dt*0.5) // + acc*(0.5 * dt^2)
-        )
-
-        
-
-        // collisions  //TODO add y range?
-        if (this.sphere.position.y - 2 <= CONST.BALL_RAD && Math.abs(this.sphere.position.x) <= CONST.TABLE_W / 2 && Math.abs(this.sphere.position.z) <= CONST.TABLE_L / 2) {
-            // table collision TODO
-            new_vel = new THREE.Vector3(this.vel.x, Math.abs(this.vel.y) - 2, this.vel.z); // lose energy?
-            // spin? TODO
-
-                    //     let dir: THREE.Vector3 = new THREE.Vector3(this.spinAxis.z, 0, -1 * this.spinAxis.x);
-                //     dir = dir.normalize().multiplyScalar( this.spinStrength * .8);
-                //     this.vel.addVectors(this.vel, dir);
-                    
-                //   this.spinStrength *= .8;
-                //     this.hitSide++;
-                //     return;
-                // } 
-         } else if (Math.abs(this.sphere.position.z) >= CONST.TABLE_L / 2 && Math.abs(this.sphere.position.x) < CONST.TABLE_W / 2) {
-            // table boundary
-            new_vel.z = this.getSide() - 1 ? -1 * Math.abs(this.vel.z) : Math.abs(this.vel.z);
+            let t_prop = ((this.pos.y - CONST.BALL_RAD) - CONST.TABLE_Y) / (this.pos.y - CONST.BALL_RAD - (update.pos.y - CONST.BALL_RAD))
             
-            new_vel.y = 40;
+            let collision = this.verlet(this.pos, this.vel, this.acc, dt * t_prop)
 
-        } else if (this.sphere.position.y <= CONST.NET_H && Math.abs(this.sphere.position.z) <= CONST.BALL_RAD * 2 && Math.abs(this.sphere.position.x) < CONST.TABLE_W / 2) {            // 
+            collision.vel.y = -1 * collision.vel.y
+            update = this.verlet(collision.pos, collision.vel, collision.acc, dt * (1-t_prop));
+            //let collision = this.predictCollision(this.pos, this.vel, this.acc)
+            
+            
+            // let comp_dt = dt - collision.dt
+            // console.log("comp_dt:", comp_dt)
+            // // collision.vel.y = Math.abs(collision.vel.y);
+            // update = this.verlet(collision.pos, collision.vel, collision.acc, comp_dt)
+            
+            // spin?
+        }
+
+
+
+        if (Math.abs(this.sphere.position.z) >= CONST.TABLE_L / 2 && Math.abs(this.sphere.position.x) < CONST.TABLE_W / 2) {
+            // table boundary
+            update.vel.z = this.getSide() - 1 ? -1 * Math.abs(this.vel.z) : Math.abs(this.vel.z);
+            
+            update.vel.y = 40;
+
+        } //else if (this.sphere.position.y <= CONST.NET_H && Math.abs(this.sphere.position.z) <= CONST.BALL_RAD * 2 && Math.abs(this.sphere.position.x) < CONST.TABLE_W / 2) {            // 
             // net collision
             //new_vel = new THREE.Vector3(0, this.vel.y * .4, 0)
-        } //else if (this.sphere.position.y <= CONST.FLOOR_Y_POS) {
+       // } //else if (this.sphere.position.y <= CONST.FLOOR_Y_POS) {
         //     //if below table, bam apply absorption from cool pingpong club floor
         //     new_vel.y = Math.abs(this.vel.y);
         //     new_vel.y *= CONST.FLOOR_Y_ABSORB;
@@ -110,11 +146,10 @@ export class Ball {
         // } 
 
         // set values
-        this.acc = new_acc;  
-        this.vel = new_vel;
-        this.sphere.position.x = new_pos.x;
-        this.sphere.position.y = new_pos.y;
-        this.sphere.position.z = new_pos.z;
+        this.acc = update.acc;  
+        this.vel = update.vel;
+        this.pos = update.pos;
+        this.updateSphere()
     }
 
 
