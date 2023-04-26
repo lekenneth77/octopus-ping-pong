@@ -158,7 +158,7 @@ function addGuiOctopus(name, octopus) {
 	const playerFolder = gui.addFolder(name);
 	playerFolder.add(octopus, 'horizontalAngle', -90, 90);
 	playerFolder.add(octopus, 'verticalAngle', -90, 90);
-	playerFolder.add(octopus, 'force', 0, 20);
+	playerFolder.add(octopus, 'force', 0, 200);
 	playerFolder.add(octopus.spinAxis, 'x', -1, 1);
 	playerFolder.add(octopus.spinAxis, 'y', -1, 1);
 	playerFolder.add(octopus.spinAxis, 'z', -1, 1);

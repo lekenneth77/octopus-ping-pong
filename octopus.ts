@@ -12,7 +12,7 @@ export class Octopus {
     constructor() {
         this.horizontalAngle = 0;
         this.verticalAngle = 0;
-        this.force = 0;
+        this.force = 100;
         this.spinAxis = new THREE.Vector3();
         this.spinStrength = 0;
     }
