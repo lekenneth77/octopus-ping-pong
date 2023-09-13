@@ -1,4 +1,5 @@
 # Octopus Ping Pong
+Developed in ThreeJS
 
 ## Programmers
 Goldin Vo
