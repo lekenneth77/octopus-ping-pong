@@ -1,5 +1,7 @@
-# Name
-
+# Octopus Ping Pong
+Goldin Vo
+Kenneth Le
+Viet Le
 
 
 ### Standard Units
